@@ -1,0 +1,86 @@
+[
+  {
+    "id": "1",
+    "question": "What is the capital of France?",
+    "options": ["London", "Paris", "Berlin", "Madrid"],
+    "correctAnswerIndex": 1,
+    "explanation": "Paris is the capital and largest city of France."
+  },
+  {
+    "id": "2",
+    "question": "What is 2 + 2?",
+    "options": ["3", "4", "5", "6"],
+    "correctAnswerIndex": 1,
+    "explanation": "2 + 2 equals 4."
+  },
+  {
+    "id": "3",
+    "question": "Which planet is closest to the Sun?",
+    "options": ["Venus", "Mercury", "Earth", "Mars"],
+    "correctAnswerIndex": 1,
+    "explanation": "Mercury is the closest planet to the Sun."
+  },
+  {
+    "id": "4",
+    "question": "What is the largest ocean on Earth?",
+    "options": ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"],
+    "correctAnswerIndex": 2,
+    "explanation": "The Pacific Ocean is the largest and deepest ocean."
+  },
+  {
+    "id": "5",
+    "question": "In what year did World War II end?",
+    "options": ["1943", "1944", "1945", "1946"],
+    "correctAnswerIndex": 2,
+    "explanation": "World War II ended in 1945."
+  },
+  {
+    "id": "6",
+    "question": "What is the smallest prime number?",
+    "options": ["0", "1", "2", "3"],
+    "correctAnswerIndex": 2,
+    "explanation": "2 is the smallest prime number."
+  },
+  {
+    "id": "7",
+    "question": "Which element has the chemical symbol 'Au'?",
+    "options": ["Silver", "Gold", "Aluminum", "Argon"],
+    "correctAnswerIndex": 1,
+    "explanation": "Gold has the chemical symbol Au."
+  },
+  {
+    "id": "8",
+    "question": "What is the fastest land animal?",
+    "options": ["Lion", "Gazelle", "Cheetah", "Pronghorn"],
+    "correctAnswerIndex": 2,
+    "explanation": "The Cheetah is the fastest land animal."
+  },
+  {
+    "id": "9",
+    "question": "How many strings does a violin have?",
+    "options": ["3", "4", "5", "6"],
+    "correctAnswerIndex": 1,
+    "explanation": "A violin has 4 strings."
+  },
+  {
+    "id": "10",
+    "question": "What is the tallest mountain in the world?",
+    "options": ["K2", "Kangchenjunga", "Mount Everest", "Lhotse"],
+    "correctAnswerIndex": 2,
+    "explanation": "Mount Everest is the tallest mountain in the world."
+  },
+  {
+    "id": "11",
+    "question": "What year was the internet created?",
+    "options": ["1969", "1975", "1983", "1991"],
+    "correctAnswerIndex": 0,
+    "explanation": "The internet was created in 1969 with ARPANET."
+  },
+  {
+    "id": "12",
+    "question": "Which country is home to the Great Wall?",
+    "options": ["Japan", "China", "Korea", "Vietnam"],
+    "correctAnswerIndex": 1,
+    "explanation": "The Great Wall is located in China."
+  }
+]
