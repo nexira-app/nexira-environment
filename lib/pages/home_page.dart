@@ -1,216 +1,162 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import 'quiz_page.dart';
 import 'leaderboard_page.dart';
 import 'profile_page.dart';
-import 'login_page.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, _) {
-        if (!authProvider.isAuthenticated) {
-          return const LoginPage();
-        }
-
-        final user = authProvider.currentUser;
-        return Scaffold(
-          body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF0A0A0A), Color(0xFF1A1A2E)],
-              ),
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Welcome back,',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                user?.username ?? 'User',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF00E5FF),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFF00E5FF),
-                                width: 2,
-                              ),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.person,
-                                color: Color(0xFF00E5FF),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _StatCard(
-                              title: 'XP',
-                              value: '${user?.totalXp ?? 0}',
-                              icon: Icons.flash_on,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _StatCard(
-                              title: 'Coins',
-                              value: '${user?.coins ?? 0}',
-                              icon: Icons.monetization_on,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                      _MenuButton(
-                        title: 'Start Quiz',
-                        subtitle: 'Challenge yourself',
-                        icon: Icons.quiz,
-                        color: const Color(0xFF00E5FF),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const QuizPage()),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _MenuButton(
-                        title: 'Leaderboard',
-                        subtitle: 'See top scores',
-                        icon: Icons.leaderboard,
-                        color: const Color(0xFF7B2FFF),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const LeaderboardPage()),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _MenuButton(
-                        title: 'Profile',
-                        subtitle: 'View your profile',
-                        icon: Icons.person,
-                        color: const Color(0xFF00E5FF),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const ProfilePage()),
-                          );
-                        },
-                      ),
-                    ],
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Nexira'),
+        elevation: 0,
+      ),
+      body: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    'سلام، ${authProvider.currentUser?.username}! 👋',
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 40),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _StatCard(
+                          icon: Icons.star,
+                          label: 'XP',
+                          value: authProvider.currentUser?.totalXP.toString() ?? '0',
+                        ),
+                        _StatCard(
+                          icon: Icons.monetization_on,
+                          label: 'Coins',
+                          value:
+                              authProvider.currentUser?.totalCoins.toString() ?? '0',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 50),
+                  _ActionButton(
+                    icon: Icons.quiz,
+                    label: 'شروع کویز',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const QuizPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _ActionButton(
+                    icon: Icons.leaderboard,
+                    label: 'صورت‌جلسه',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const LeaderboardPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _ActionButton(
+                    icon: Icons.person,
+                    label: 'پروفایل',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
 class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
   final IconData icon;
+  final String label;
+  final String value;
 
   const _StatCard({
-    required this.title,
-    required this.value,
     required this.icon,
+    required this.label,
+    required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF7B2FFF), width: 1),
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF7B2FFF).withOpacity(0.1),
-            const Color(0xFF00E5FF).withOpacity(0.05),
-          ],
+    return Column(
+      children: [
+        Icon(
+          icon,
+          color: AppColors.primary,
+          size: 32,
         ),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: const Color(0xFF00E5FF), size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF00E5FF),
-            ),
+        const SizedBox(height: 10),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.primary,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _MenuButton extends StatelessWidget {
-  final String title;
-  final String subtitle;
+class _ActionButton extends StatelessWidget {
   final IconData icon;
-  final Color color;
+  final String label;
   final VoidCallback onTap;
 
-  const _MenuButton({
-    required this.title,
-    required this.subtitle,
+  const _ActionButton({
     required this.icon,
-    required this.color,
+    required this.label,
     required this.onTap,
   });
 
@@ -221,42 +167,39 @@ class _MenuButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          border: Border.all(color: color, width: 1.5),
-          borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: [
-              color.withOpacity(0.1),
-              color.withOpacity(0.05),
+              AppColors.primary.withOpacity(0.2),
+              AppColors.secondary.withOpacity(0.2),
             ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.5),
+            width: 2,
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
+            Icon(
+              icon,
+              color: AppColors.primary,
+              size: 32,
+            ),
+            const SizedBox(width: 20),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Icon(Icons.arrow_forward, color: color),
+            const Spacer(),
+            const Icon(
+              Icons.arrow_forward,
+              color: AppColors.primary,
+            ),
           ],
         ),
       ),

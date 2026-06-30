@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../models/leaderboard_model.dart';
+import '../models/leaderboard_entry.dart';
 
 class LeaderboardProvider extends ChangeNotifier {
   late SharedPreferences _prefs;
@@ -18,27 +18,16 @@ class LeaderboardProvider extends ChangeNotifier {
     await loadLeaderboard();
   }
 
-  Future<void> loadLeaderboard() async {
-    final List<String>? savedData = _prefs.getStringList('leaderboard');
-    if (savedData != null) {
-      _leaderboard = savedData
-          .map((e) => LeaderboardEntry.fromJson(json.decode(e)))
-          .toList();
-      _sortLeaderboard();
-    }
-    notifyListeners();
-  }
-
-  Future<void> addScore(String username, int score, int xpEarned) async {
+  Future<void> addScore(String username, int score, int xp) async {
     final entry = LeaderboardEntry(
       username: username,
       score: score,
-      xpEarned: xpEarned,
-      timestamp: DateTime.now(),
+      xp: xp,
+      date: DateTime.now(),
     );
 
     _leaderboard.add(entry);
-    _sortLeaderboard();
+    _leaderboard.sort((a, b) => b.score.compareTo(a.score));
 
     if (_leaderboard.length > 10) {
       _leaderboard = _leaderboard.take(10).toList();
@@ -48,18 +37,22 @@ class LeaderboardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _sortLeaderboard() {
-    _leaderboard.sort((a, b) => b.score.compareTo(a.score));
-  }
-
   Future<void> _saveLeaderboard() async {
-    final data = _leaderboard.map((e) => json.encode(e.toJson())).toList();
-    await _prefs.setStringList('leaderboard', data);
+    final jsonList = _leaderboard.map((e) => e.toJson()).toList();
+    await _prefs.setString('leaderboard', json.encode(jsonList));
   }
 
-  Future<void> clearLeaderboard() async {
-    _leaderboard.clear();
-    await _prefs.remove('leaderboard');
+  Future<void> loadLeaderboard() async {
+    try {
+      final jsonString = _prefs.getString('leaderboard');
+      if (jsonString != null) {
+        final jsonList = json.decode(jsonString) as List;
+        _leaderboard =
+            jsonList.map((e) => LeaderboardEntry.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print('Error loading leaderboard: $e');
+    }
     notifyListeners();
   }
 }

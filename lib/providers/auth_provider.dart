@@ -17,62 +17,19 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider() {
     _initializePrefs();
-    _checkAuthState();
   }
 
   Future<void> _initializePrefs() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  void _checkAuthState() {
-    _firebaseAuth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        _loadUserData(user);
-      } else {
-        _currentUser = null;
-        notifyListeners();
-      }
-    });
-  }
-
-  Future<void> _loadUserData(User user) async {
-    final String? userData = _prefs.getString('user_${user.uid}');
-    if (userData != null) {
-      // Load from local storage
-      _currentUser = UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        username: _prefs.getString('username_${user.uid}') ?? 'User',
-        totalXp: _prefs.getInt('xp_${user.uid}') ?? 0,
-        coins: _prefs.getInt('coins_${user.uid}') ?? 0,
-      );
-    } else {
-      _currentUser = UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        username: user.email?.split('@')[0] ?? 'User',
-      );
-      await _saveUserData();
-    }
+  Future<void> register(String email, String password, String username) async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
-  }
 
-  Future<void> _saveUserData() async {
-    if (_currentUser != null) {
-      await _prefs.setString('user_${_currentUser!.uid}', 'stored');
-      await _prefs.setString('username_${_currentUser!.uid}', _currentUser!.username);
-      await _prefs.setInt('xp_${_currentUser!.uid}', _currentUser!.totalXp);
-      await _prefs.setInt('coins_${_currentUser!.uid}', _currentUser!.coins);
-    }
-  }
-
-  Future<bool> register(String email, String password, String username) async {
     try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
-
-      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -81,40 +38,50 @@ class AuthProvider extends ChangeNotifier {
         uid: userCredential.user!.uid,
         email: email,
         username: username,
+        totalXP: 0,
+        totalCoins: 0,
       );
 
-      await _saveUserData();
+      await _prefs.setString('username', username);
+      await _prefs.setString('email', email);
+      await _prefs.setInt('totalXP', 0);
+      await _prefs.setInt('totalCoins', 0);
+
       _isLoading = false;
       notifyListeners();
-      return true;
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message ?? 'Registration failed';
+      _errorMessage = _getFirebaseErrorMessage(e.code);
       _isLoading = false;
       notifyListeners();
-      return false;
     }
   }
 
-  Future<bool> login(String email, String password) async {
-    try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
+  Future<void> login(String email, String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
-      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+    try {
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      await _loadUserData(userCredential.user!);
+      final username = await _prefs.getString('username') ?? 'User';
+      _currentUser = UserModel(
+        uid: userCredential.user!.uid,
+        email: email,
+        username: username,
+        totalXP: await _prefs.getInt('totalXP') ?? 0,
+        totalCoins: await _prefs.getInt('totalCoins') ?? 0,
+      );
+
       _isLoading = false;
       notifyListeners();
-      return true;
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message ?? 'Login failed';
+      _errorMessage = _getFirebaseErrorMessage(e.code);
       _isLoading = false;
       notifyListeners();
-      return false;
     }
   }
 
@@ -124,19 +91,36 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addXp(int xp) async {
+  void addXP(int xp) {
     if (_currentUser != null) {
-      _currentUser = _currentUser!.copyWith(totalXp: _currentUser!.totalXp + xp);
-      await _saveUserData();
+      _currentUser!.totalXP += xp;
+      _prefs.setInt('totalXP', _currentUser!.totalXP);
       notifyListeners();
     }
   }
 
-  Future<void> addCoins(int coins) async {
+  void addCoins(int coins) {
     if (_currentUser != null) {
-      _currentUser = _currentUser!.copyWith(coins: _currentUser!.coins + coins);
-      await _saveUserData();
+      _currentUser!.totalCoins += coins;
+      _prefs.setInt('totalCoins', _currentUser!.totalCoins);
       notifyListeners();
+    }
+  }
+
+  String _getFirebaseErrorMessage(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'کاربری با این ایمیل یافت نشد';
+      case 'wrong-password':
+        return 'رمز عبور اشتباه است';
+      case 'email-already-in-use':
+        return 'این ایمیل قبلاً ثبت نام کرده است';
+      case 'weak-password':
+        return 'رمز عبور ضعیف است';
+      case 'invalid-email':
+        return 'ایمیل نامعتبر است';
+      default:
+        return 'خطای احراز هویت: $code';
     }
   }
 }

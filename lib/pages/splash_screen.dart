@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import 'login_page.dart';
 import 'home_page.dart';
@@ -15,82 +16,94 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        final authProvider = context.read<AuthProvider>();
-        if (authProvider.isAuthenticated) {
-          Navigator.of(context).pushReplacementNamed('/');
-        } else {
-          Navigator.of(context).pushReplacementNamed('/login');
-        }
-      }
-    });
+    _navigateToNextScreen();
+  }
+
+  void _navigateToNextScreen() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      final authProvider = context.read<AuthProvider>();
+      final nextScreen =
+          authProvider.isAuthenticated ? const HomePage() : const LoginPage();
+      Navigator.of(context).pushReplacementNamed(
+        MaterialPageRoute(builder: (_) => nextScreen).settings.name ?? '',
+        arguments: nextScreen,
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => nextScreen),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0A0A0A), Color(0xFF1A1A2E)],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFF00E5FF),
-                    width: 3,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF00E5FF).withOpacity(0.5),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primary,
+                    AppColors.secondary,
                   ],
                 ),
-                child: const Center(
-                  child: Text(
-                    'N',
-                    style: TextStyle(
-                      fontSize: 60,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF00E5FF),
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.5),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Text(
+                  'Ⓝ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 60,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
-              const Text(
-                'NEXIRA',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF00E5FF),
-                  letterSpacing: 3,
-                ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'NEXIRA',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Quiz Master',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF7B2FFF),
-                  letterSpacing: 2,
-                ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Quiz Game',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 16,
+                letterSpacing: 1,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 50),
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                strokeWidth: 2,
+              ),
+            ),
+          ],
         ),
       ),
     );

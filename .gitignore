@@ -8,6 +8,8 @@
 .buildlog/
 .history
 .svn/
+.vscode
+/Android.toolchain.cmake
 
 # IntelliJ related
 *.iml
@@ -16,8 +18,8 @@
 .idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be committed
-# .vscode/
+# VS Code which you may wish to be in version control
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -28,16 +30,13 @@
 .packages
 .pub-cache/
 .pub/
-build/
+/build/
 
-# Android related
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
 
 # iOS/macOS
 **/ios/**/*.mode1v3
@@ -53,36 +52,17 @@ build/
 **/ios/**/Icon?
 **/ios/**/Pods/
 **/ios/**/.symlinks/
-**/ios/**/*.jinja2
-**/ios/**/*.pbxproj
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/*.jinja2
-**/ios/**/.Flutter/Flutter.podspec
-**/ios/**/Flutter/Flutter.podspec
+**/ios/**/.generated/
 **/ios/**/Flutter/Flutter.framework
-**/ios/**/Flutter/Flutter.framework/Flutter
-**/ios/**/Flutter/Flutter.modulemap
-**/ios/**/GeneratedPluginRegistrant.*
+**/ios/**/Flutter/Flutter.podspec
+**/ios/**/Flutter/Generated.xcconfig
+**/ios/**/Flutter/ephemeral/
+**/ios/**/Flutter/app.flx
+**/ios/**/Flutter/app.zip
+**/ios/**/Flutter/flutter_assets/
+**/ios/**/Flutter/flutter_export_environment.sh
+**/ios/**/ServiceDefinitions.json
+**/ios/**/Runner/GeneratedPluginRegistrant.*
 
-# Web
-lib/generated_plugin_registrant.dart
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
